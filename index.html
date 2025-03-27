@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kompetenz-Tool Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+        .container {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        select, button, input, textarea {
+            padding: 10px;
+            margin: 8px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button.copy-btn {
+            background-color: #2ecc71;
+            margin-top: 5px;
+        }
+        button.copy-btn:hover {
+            background-color: #27ae60;
+        }
+        #output-section, #smart-section, #steps-section {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px dashed #ccc;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .section-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        .two-columns {
+            display: flex;
+            gap: 20px;
+        }
+        .column {
+            flex: 1;
+        }
+        @media (max-width: 768px) {
+            .two-columns {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Kompetenz-Tool Generator</h1>
+        
+        <!-- Kompetenzauswahl -->
+        <div class="two-columns">
+            <div class="column">
+                <label for="kompetenz">Kompetenzbereich:</label>
+                <select id="kompetenz">
+                    <option value="">-- Wählen --</option>
+                    <option value="schulische_basiskompetenz">Schulische Basiskompetenz</option>
+                    <option value="personale_kompetenz">Personale Kompetenz</option>
+                    <option value="methodische_kompetenz">Methodische Kompetenz</option>
+                    <option value="sozialkommunikative_kompetenz">Sozialkommunikative Kompetenz</option>
+                    <option value="arbeitsverhalten">Arbeitsverhalten</option>
+                    <option value="berufliche_kenntnisse">Berufliche Kenntnisse</option>
+                    <option value="interkulturelle_kompetenz">Interkulturelle Kompetenz</option>
+                    <option value="it_medienkompetenz">IT- und Medienkompetenz</option>
+                    <option value="lebenspraktische_fertigkeiten">Lebenspraktische Fertigkeiten</option>
+                    <option value="gruene_kompetenzen">Grüne Kompetenzen</option>
+                    <option value="internet_4_0">Internet 4.0</option>
+                    <option value="diversitaetskompetenz">Diversitätskompetenz</option>
+                </select>
+                
+                <label for="niveau">Niveau:</label>
+                <select id="niveau">
+                    <option value="">-- Wählen --</option>
+                    <option value="hoch">Hoch</option>
+                    <option value="mittel">Mittel</option>
+                    <option value="niedrig">Niedrig</option>
+                </select>
+                
+                <label for="name">Teilnehmer:</label>
+                <input type="text" id="name" placeholder="Name eingeben">
+                
+                <button onclick="generateAll()">Alle Texte generieren</button>
+            </div>
+            
+            <div class="column">
+                <label for="info-select">Kompetenz-Info:</label>
+                <select id="info-select" onchange="showInfo()">
+                    <option value="">-- Erklärung wählen --</option>
+                    <option value="schulische_basiskompetenz">Schulische Basiskompetenz</option>
+                    <option value="personale_kompetenz">Personale Kompetenz</option>
+                    <option value="methodische_kompetenz">Methodische Kompetenz</option>
+                    <option value="sozialkommunikative_kompetenz">Sozialkommunikative Kompetenz</option>
+                    <option value="arbeitsverhalten">Arbeitsverhalten</option>
+                    <option value="berufliche_kenntnisse">Berufliche Kenntnisse</option>
+                    <option value="interkulturelle_kompetenz">Interkulturelle Kompetenz</option>
+                    <option value="it_medienkompetenz">IT- und Medienkompetenz</option>
+                    <option value="lebenspraktische_fertigkeiten">Lebenspraktische Fertigkeiten</option>
+                    <option value="gruene_kompetenzen">Grüne Kompetenzen</option>
+                    <option value="internet_4_0">Internet 4.0</option>
+                    <option value="diversitaetskompetenz">Diversitätskompetenz</option>
+                </select>
+                <div id="info-box" style="padding:10px;background:#e8f4fc;border-radius:4px;min-height:100px;"></div>
+                <button onclick="copyToClipboard('info-box')" class="copy-btn">Info kopieren</button>
+            </div>
+        </div>
+        
+        <!-- Ausgabebereiche -->
+        <div class="section-title">Kompetenzbeschreibung:</div>
+        <div id="output-section"></div>
+        <button onclick="copyToClipboard('output-section')" class="copy-btn">Kompetenzbeschreibung kopieren</button>
+        
+        <div class="section-title">SMART-Zielformulierung:</div>
+        <div id="smart-section"></div>
+        <button onclick="copyToClipboard('smart-section')" class="copy-btn">Ziel kopieren</button>
+        
+        <div class="section-title">Maßnahmen zur Zielerreichung:</div>
+        <div id="steps-section"></div>
+        <button onclick="copyToClipboard('steps-section')" class="copy-btn">Maßnahmen kopieren</button>
+    </div>
+
+    <script>
+        // Kompetenz-Erklärungen
+        const kompetenzInfos = {
+            schulische_basiskompetenz: "Grundlegende Fähigkeiten in schulischen Fächern wie Mathematik, Deutsch oder Sachkunde. Beinhaltet Lesen, Schreiben, Rechnen und logisches Denken.",
+            personale_kompetenz: "Selbstreflexion, Eigenverantwortung und die Fähigkeit, eigene Stärken und Schwächen realistisch einzuschätzen. Umfasst auch Selbstmotivation und Resilienz.",
+            methodische_kompetenz: "Fähigkeit, Lern- und Arbeitsstrategien anzuwenden, Informationen zu strukturieren und Probleme systematisch zu lösen. Inkludiert Zeitmanagement und Recherchefähigkeiten.",
+            sozialkommunikative_kompetenz: "Kommunikationsfähigkeit, Teamarbeit und konstruktiver Umgang mit Konflikten. Beinhaltet aktives Zuhören und angemessene verbale/nonverbale Kommunikation.",
+            arbeitsverhalten: "Zuverlässigkeit, Pünktlichkeit, Sorgfalt und Durchhaltevermögen bei der Aufgabenerledigung. Umfasst auch Selbstorganisation und Arbeitsqualität.",
+            berufliche_kenntnisse: "Fachwissen und praktische Fertigkeiten in einem spezifischen Berufsfeld. Beinhaltet berufsspezifische Techniken und Prozessverständnis.",
+            interkulturelle_kompetenz: "Fähigkeit, mit Menschen aus unterschiedlichen Kulturen respektvoll und empathisch umzugehen. Inkludiert kulturelle Sensibilität und Anpassungsfähigkeit.",
+            it_medienkompetenz: "Sicherer Umgang mit digitalen Technologien, Software und Medieninhalten. Umfasst Datenschutz, kritische Mediennutzung und Anwendungsfähigkeiten.",
+            lebenspraktische_fertigkeiten: "Alltagsfähigkeiten wie Haushaltsführung, persönliche Finanzen oder Gesundheitsvorsorge. Beinhaltet praktische Lebensbewältigung.",
+            gruene_kompetenzen: "Nachhaltiges Denken und Handeln in Bezug auf Umwelt- und Klimaschutz. Umfasst ökologisches Bewusstsein und ressourcenschonendes Verhalten.",
+            internet_4_0: "Verständnis und Anwendung moderner Internet-Technologien wie Cloud Computing, KI oder IoT. Beinhaltet digitale Transformationsthemen.",
+            diversitaetskompetenz: "Wertschätzender Umgang mit Vielfalt (z.B. Geschlecht, Herkunft, Behinderung). Inkludiert Inklusion und Antidiskriminierung."
+        };
+
+        // Kompetenzbeschreibungen
+        const descriptions = {
+            schulische_basiskompetenz: {
+                hoch: "beherrscht die schulischen Anforderungen sicher und arbeitet selbstständig in allen relevanten Fächern.",
+                mittel: "erfüllt grundlegende schulische Anforderungen, benötigt gelegentlich Unterstützung bei komplexeren Aufgaben.",
+                niedrig: "hat noch deutliche Schwierigkeiten mit grundlegenden schulischen Anforderungen und benötigt regelmäßige Hilfestellung."
+            },
+            personale_kompetenz: {
+                hoch: "reflektiert eigene Stärken und Schwächen äußerst realistisch, handelt eigeninitiativ und übernimmt Verantwortung für das eigene Handeln.",
+                mittel: "erkennt eigene Stärken und Schwächen grundsätzlich, handelt meist zielgerichtet, benötigt gelegentlich Impulse.",
+                niedrig: "hat Schwierigkeiten, eigene Fähigkeiten einzuschätzen, und benötigt klare Anleitung für selbstständiges Handeln."
+            },
+            methodische_kompetenz: {
+                hoch: "plant und strukturiert Aufgaben systematisch, wählt passende Methoden aus und lernt selbstgesteuert.",
+                mittel: "wendet bekannte Methoden sicher an, benötigt bei neuen Herausforderungen noch Anleitung.",
+                niedrig: "hat Schwierigkeiten mit der Aufgabenplanung und benötigt klare Vorgaben zur Methodenanwendung."
+            },
+            sozialkommunikative_kompetenz: {
+                hoch: "kommuniziert stets respektvoll, löst Konflikte konstruktiv und übernimmt aktiv Verantwortung in Gruppen.",
+                mittel: "interagiert meist angemessen, benötigt bei Konflikten manchmal Unterstützung zur Lösungsfindung.",
+                niedrig: "hat deutliche Schwierigkeiten mit Kommunikationsregeln und benötigt intensive Begleitung in Gruppensituationen."
+            },
+            arbeitsverhalten: {
+                hoch: "arbeitet äußerst zuverlässig, hält Deadlines konsequent ein und zeigt vorbildliches Durchhaltevermögen.",
+                mittel: "erledigt Aufgaben grundsätzlich termingerecht, benötigt gelegentlich Erinnerungen oder Motivationshilfen.",
+                niedrig: "lässt sich leicht ablenken und benötigt häufige Unterstützung bei der Priorisierung und Durchführung von Aufgaben."
+            },
+            berufliche_kenntnisse: {
+                hoch: "verfügt über fundiertes Fachwissen und kann es sicher in der Praxis anwenden.",
+                mittel: "beherrscht die Grundlagen des Berufsfelds, benötigt bei komplexeren Aufgaben noch Anleitung.",
+                niedrig: "hat grundlegende Wissenslücken und benötigt intensive Einarbeitung in berufsspezifische Abläufe."
+            },
+            interkulturelle_kompetenz: {
+                hoch: "geht offen und empathisch auf Menschen aus anderen Kulturen zu, zeigt hohe Anpassungsfähigkeit.",
+                mittel: "interagiert respektvoll mit Menschen unterschiedlicher Herkunft, benötigt gelegentlich Unterstützung beim Kulturverständnis.",
+                niedrig: "hat Schwierigkeiten im Umgang mit kulturellen Unterschieden und benötigt klare Regeln für interkulturelle Interaktionen."
+            },
+            it_medienkompetenz: {
+                hoch: "nutzt digitale Tools kreativ und verantwortungsvoll, beherrscht auch komplexe Anwendungen.",
+                mittel: "bedient Standardsoftware sicher, benötigt bei fortgeschrittenen Funktionen Unterstützung.",
+                niedrig: "hat grundlegende Schwierigkeiten im Umgang mit digitalen Medien und benötigt Einweisung in Basisprogramme."
+            },
+            lebenspraktische_fertigkeiten: {
+                hoch: "meistert Alltagsaufgaben wie Einkaufen, Haushaltsführung oder Finanzplanung völlig selbstständig.",
+                mittel: "erledigt grundlegende Alltagsaufgaben, benötigt bei komplexeren Herausforderungen (z.B. Behördengänge) Unterstützung.",
+                niedrig: "ist auf umfassende Hilfe bei lebenspraktischen Tätigkeiten angewiesen."
+            },
+            gruene_kompetenzen: {
+                hoch: "handelt konsequent umweltbewusst und setzt Nachhaltigkeitsprinzipien aktiv um.",
+                mittel: "kennt grundlegende Umweltthemen, benötigt Impulse für nachhaltiges Handeln im Alltag.",
+                niedrig: "hat kaum Bewusstsein für Umweltthemen und benötigt klare Anleitung zu nachhaltigem Verhalten."
+            },
+            internet_4_0: {
+                hoch: "nutzt moderne Technologien wie Cloud-Dienste oder KI-Tools sicher und zielgerichtet.",
+                mittel: "setzt Standard-Internetfunktionen ein, benötigt Hilfe bei komplexeren Anwendungen.",
+                niedrig: "hat grundlegende Verständnisschwierigkeiten mit modernen Internet-Technologien."
+            },
+            diversitaetskompetenz: {
+                hoch: "erkennt und wertet Vielfalt aktiv, setzt sich gegen Diskriminierung ein.",
+                mittel: "begegnet Unterschieden grundsätzlich respektvoll, benötigt gelegentlich Reflexionshilfe.",
+                niedrig: "hat Schwierigkeiten im Umgang mit Diversität und benötigt klare Regeln für wertschätzendes Verhalten."
+            }
+        };
+
+        // SMART-Ziele
+        const smartGoals = {
+            schulische_basiskompetenz: {
+                hoch: "Ziel: [Name] soll bis [Datum] eigenständig anspruchsvolle Aufgabenstellungen in [Fach] lösen können (gemessen an mindestens 90% korrekten Lösungen).",
+                mittel: "Ziel: [Name] soll bis [Datum] grundlegende Aufgaben in [Fach] mit maximal 2 Hinweisen pro Woche bewältigen (Erfolgskriterium: 80% korrekte Lösungen).",
+                niedrig: "Ziel: [Name] soll bis [Datum] mit täglicher Unterstützung (15 Min.) einfache Basisaufgaben in [Fach] bearbeiten können (Erfolgskriterium: 50% korrekte Lösungen)."
+            },
+            personale_kompetenz: {
+                hoch: "Ziel: [Name] soll bis [Datum] ein persönliches Entwicklungsportfolio mit mindestens 5 realistischen Selbstreflexionen erstellen.",
+                mittel: "Ziel: [Name] soll bis [Datum] in 4 von 5 Situationen angemessen auf Feedback reagieren (dokumentiert durch Beobachtungsbogen).",
+                niedrig: "Ziel: [Name] soll bis [Datum] mit wöchentlicher Begleitung 3 konkrete Handlungsschritte zur Verbesserung einer Schwäche umsetzen."
+            },
+            methodische_kompetenz: {
+                hoch: "Ziel: [Name] soll bis [Datum] für komplexe Aufgaben eigenständig geeignete Methoden auswählen und anwenden (nachweisbar in 3 Projekten).",
+                mittel: "Ziel: [Name] soll bis [Datum] vorgegebene Arbeitsmethoden in 80% der Fälle korrekt anwenden (überprüft durch Lehrkraft).",
+                niedrig: "Ziel: [Name] soll bis [Datum] mit täglicher Anleitung einfache Arbeitsroutinen (z.B. Materialvorbereitung) durchführen."
+            },
+            sozialkommunikative_kompetenz: {
+                hoch: "Ziel: [Name] soll bis [Datum] in Gruppenarbeiten mindestens 3x die Moderationsrolle übernehmen und Konflikte konstruktiv lösen.",
+                mittel: "Ziel: [Name] soll bis [Datum] in 4 von 5 Gesprächssituationen aktives Zuhören zeigen (protokolliert durch Lehrkraft).",
+                niedrig: "Ziel: [Name] soll bis [Datum] mit täglichem Coaching grundlegende Gesprächsregeln in Einzelsituationen anwenden."
+            },
+            arbeitsverhalten: {
+                hoch: "Ziel: [Name] soll bis [Datum] ein Langzeitprojekt (4 Wochen) vollständig eigenverantwortlich planen und termingerecht abschließen.",
+                mittel: "Ziel: [Name] soll bis [Datum] wöchentliche Arbeitspakete mit maximal 1 Erinnerung fristgerecht erledigen.",
+                niedrig: "Ziel: [Name] soll bis [Datum] mit täglicher Strukturhilfe einfache Tagesaufgaben (3 Punkte) abarbeiten."
+            },
+            berufliche_kenntnisse: {
+                hoch: "Ziel: [Name] soll bis [Datum] alle wesentlichen Arbeitsschritte in [Berufsfeld] fehlerfrei ausführen (bestätigt durch Praxisbetrieb).",
+                mittel: "Ziel: [Name] soll bis [Datum] 5 grundlegende berufsspezifische Techniken unter Anleitung korrekt anwenden.",
+                niedrig: "Ziel: [Name] soll bis [Datum] mit intensiver Begleitung 2-3 Basistätigkeiten im Berufsfeld ausüben."
+            },
+            interkulturelle_kompetenz: {
+                hoch: "Ziel: [Name] soll bis [Datum] ein interkulturelles Projekt initiieren und durchführen (z.B. internationaler Kochabend).",
+                mittel: "Ziel: [Name] soll bis [Datum] in 4 von 5 interkulturellen Begegnungen angemessen reagieren (protokolliert durch Team).",
+                niedrig: "Ziel: [Name] soll bis [Datum] mit wöchentlichem Training 3 kulturelle Unterschiede benennen und respektieren."
+            },
+            it_medienkompetenz: {
+                hoch: "Ziel: [Name] soll bis [Datum] eine digitale Präsentation mit mindestens 3 erweiterten Funktionen (z.B. Embedding, Animation) erstellen.",
+                mittel: "Ziel: [Name] soll bis [Datum] 4 Standardprogramme (Word, Excel etc.) sicher für Basisaufgaben nutzen.",
+                niedrig: "Ziel: [Name] soll bis [Datum] mit täglicher Anleitung einfache Computeroperationen (Speichern, Drucken) durchführen."
+            },
+            lebenspraktische_fertigkeiten: {
+                hoch: "Ziel: [Name] soll bis [Datum] einen Haushaltsplan für 4 Wochen erstellen und umsetzen (inkl. Budgetverwaltung).",
+                mittel: "Ziel: [Name] soll bis [Datum] 3 wichtige Behördengänge mit Begleitung selbstständig vorbereiten.",
+                niedrig: "Ziel: [Name] soll bis [Datum] mit täglicher Unterstützung grundlegende Hygiene- und Ernährungsroutinen einhalten."
+            },
+            gruene_kompetenzen: {
+                hoch: "Ziel: [Name] soll bis [Datum] ein Nachhaltigkeitsprojekt (z.B. Mülltrennungssystem) entwickeln und implementieren.",
+                mittel: "Ziel: [Name] soll bis [Datum] in 80% der Situationen umweltbewusste Entscheidungen treffen (protokolliert über 4 Wochen).",
+                niedrig: "Ziel: [Name] soll bis [Datum] mit täglichen Erinnerungen grundlegende Umweltroutinen (Licht aus, Müll trennen) umsetzen."
+            },
+            internet_4_0: {
+                hoch: "Ziel: [Name] soll bis [Datum] eine Cloud-basierte Kollaborationslösung für eine Gruppenarbeit einrichten und nutzen.",
+                mittel: "Ziel: [Name] soll bis [Datum] 3 moderne Internetdienste (z.B. Cloud-Speicher, Videokonferenz) sicher bedienen.",
+                niedrig: "Ziel: [Name] soll bis [Datum] mit Unterstützung ein Online-Konto sicher verwalten (Login, Passwortwechsel)."
+            },
+            diversitaetskompetenz: {
+                hoch: "Ziel: [Name] soll bis [Datum] eine Inklusionsinitiative (z.B. barrierefreie Veranstaltung) planen und durchführen.",
+                mittel: "Ziel: [Name] soll bis [Datum] in 4 von 5 beobachteten Situationen diskriminierungsfrei handeln.",
+                niedrig: "Ziel: [Name] soll bis [Datum] mit wöchentlichem Training 3 Formen von Diskriminierung erkennen und benennen."
+            }
+        };
+
+        // Maßnahmenkatalog
+        const measures = {
+            schulische_basiskompetenz: {
+                hoch: "Maßnahmen:\n"
+                    + "- Teilnehmer: Bearbeitet wöchentlich 2 Zusatzaufgaben zur Vertiefung\n"
+                    + "- Lehrkraft: Stellt anspruchsvolle Übungsmaterialien bereit\n"
+                    + "- Sozialpädagoge: Fördert Selbstlernstrategien in 2 wöchentlichen Coachings",
+                mittel: "Maßnahmen:\n"
+                    + "- Teilnehmer: Führt ein Lerntagebuch zur Selbstreflexion\n"
+                    + "- Lehrkraft: Gibt gezielte Rückmeldungen zu 3 Schlüsselthemen\n"
+                    + "- Sozialpädagoge: Organisiert wöchentliche Lerngruppen",
+                niedrig: "Maßnahmen:\n"
+                    + "- Teilnehmer: Übt täglich 20 Min. mit angepassten Materialien\n"
+                    + "- Lehrkraft: Bietet tägliche Mini-Lerneinheiten (10-15 Min.)\n"
+                    + "- Sozialpädagoge: Führt 3x wöchentlich Einzelförderung durch"
+            },
+            personale_kompetenz: {
+                hoch: "Maßnahmen:\n"
+                    + "- Teilnehmer: Erstellt monatliche Selbstreflexionsberichte\n"
+                    + "- Lehrkraft: Gibt differenziertes Feedback zu Stärken/Schwächen\n"
+                    + "- Sozialpädagoge: Führt biwöchentliche Zielvereinbarungsgespräche",
+                mittel: "Maßnahmen:\n"
+                    + "- Teilnehmer: Führt wöchentlich 2 Erfolgslisten\n"
+                    + "- Lehrkraft: Dokumentiert Fortschritte in Beobachtungsbögen\n"
+                    + "- Sozialpädagoge: Übt Feedbackannahme in Rollenspielen",
+                niedrig: "Maßnahmen:\n"
+                    + "- Teilnehmer: Benennt täglich 1 persönliche Stärke\n"
+                    + "- Lehrkraft: Gibt klare, kurze Handlungsanweisungen\n"
+                    + "- Sozialpädagoge: Begleitet täglich bei kleinen Entscheidungen"
+            },
+            methodische_kompetenz: {
+                hoch: "Maßnahmen:\n"
+                    + "- Teilnehmer: Entwickelt eigene Lernstrategien und dokumentiert sie\n"
+                    + "- Lehrkraft: Stellt komplexe Problemstellungen bereit\n"
+                    + "- Sozialpädagoge: Trainiert Metakognition in wöchentlichen Sessions",
+                mittel: "Maßnahmen:\n"
+                    + "- Teilnehmer: Wendet vorgegebene Methoden in 3 Projekten an\n"
+                    + "- Lehrkraft: Erklärt Methoden mit konkreten Beispielen\n"
+                    + "- Sozialpädagoge: Übt Zeitmanagement mit visuellen Hilfen",
+                niedrig: "Maßnahmen:\n"
+                    + "- Teilnehmer: Folgt täglichen Schritt-für-Schritt-Anleitungen\n"
+                    + "- Lehrkraft: Bietet stark strukturierte Arbeitsblätter\n"
+                    + "- Sozialpädagoge: Führt durch Arbeitsprozesse mit Handlungsanweisungen"
+            },
+            sozialkommunikative_kompetenz: {
+                hoch: "Maßnahmen:\n"
+                    + "- Teilnehmer: Übernimmt Moderation in 3 Gruppendiskussionen\n"
+                    + "- Lehrkraft: Schafft anspruchsvolle Gruppenarbeits-Settings\n"
+                    + "- Sozialpädagoge: Trainiert Konfliktmediation in Workshops",
+                mittel: "Maßnahmen:\n"
+                    + "- Teilnehmer: Übt aktives Zuhören in Partnerarbeit\n"
+                    + "- Lehrkraft: Gibt direktes Feedback zu Kommunikationsmustern\n"
+                    + "- Sozialpädagoge: Leitet wöchentliche Sozialkompetenz-Trainings",
+                niedrig: "Maßnahmen:\n"
+                    + "- Teilnehmer: Benutzt täglich 3 Grundformeln der Höflichkeit\n"
+                    + "- Lehrkraft: Bietet klare Gesprächsregeln mit visueller Unterstützung\n"
+                    + "- Sozialpädagoge: Begleitet intensiv in sozialen Interaktionen"
+            },
+            arbeitsverhalten: {
+                hoch: "Maßnahmen:\n"
+                    + "- Teilnehmer: Plant und dokumentiert ein 4-Wochen-Projekt\n"
+                    + "- Lehrkraft: Gibt komplexe, langfristige Aufgaben\n"
+                    + "- Sozialpädagoge: Berät bei der Priorisierung größerer Vorhaben",
+                mittel: "Maßnahmen:\n"
+                    + "- Teilnehmer: Nutzt Checklisten für wöchentliche Aufgaben\n"
+                    + "- Lehrkraft: Gibt strukturierte Wochenpläne vor\n"
+                    + "- Sozialpädagoge: Unterstützt bei der Tagesplanung",
+                niedrig: "Maßnahmen:\n"
+                    + "- Teilnehmer: Bearbeitet 3 klar definierte Mini-Aufgaben täglich\n"
+                    + "- Lehrkraft: Bietet stark gegliederte Arbeitsaufträge\n"
+                    + "- Sozialpädagoge: Begleitet Schritt-für-Schritt durch Tagesablauf"
+            },
+            berufliche_kenntnisse: {
+                hoch: "Maßnahmen:\n"
+                    + "- Teilnehmer: Erstellt Fachportfolio mit Praxisbelegen\n"
+                    + "- Lehrkraft: Simuliert komplexe berufliche Situationen\n"
+                    + "- Sozialpädagoge: Organisiert Experteninterviews",
+                mittel: "Maßnahmen:\n"
+                    + "- Teilnehmer: Übt 5 Kernkompetenzen in Praxis-Simulationen\n"
+                    + "- Lehrkraft: Bietet angeleitete Fachaufgaben\n"
+                    + "- Sozialpädagoge: Arrangiert Betriebsbesichtigungen",
+                niedrig: "Maßnahmen:\n"
+                    + "- Teilnehmer: Wiederholt täglich Basiswissen mit Anleitung\n"
+                    + "- Lehrkraft: Bietet stark vereinfachte Praxisbeispiele\n"
+                    + "- Sozialpädagoge: Führt praktisch durch Grundtätigkeiten"
+            },
+            interkulturelle_kompetenz: {
+                hoch: "Maßnahmen:\n"
+                    + "- Teilnehmer: Organisiert ein interkulturelles Event\n"
+                    + "- Lehrkraft: Integriert globale Themen in den Unterricht\n"
+                    + "- Sozialpädagoge: Vermittelt internationale Kontakte",
+                mittel: "Maßnahmen:\n"
+                    + "- Teilnehmer: Führt wöchentlich 1 kulturelle Recherche durch\n"
+                    + "- Lehrkraft: Diskutiert kulturelle Unterschiede im Unterricht\n"
+                    + "- Sozialpädagoge: Übt interkulturelle Kommunikation",
+                niedrig: "Maßnahmen:\n"
+                    + "- Teilnehmer: Lernt täglich 1 kulturellen Fakt\n"
+                    + "- Lehrkraft: Zeigt konkrete kulturelle Beispiele\n"
+                    + "- Sozialpädagoge: Erklärt grundlegende kulturelle Normen"
+            },
+            it_medienkompetenz: {
+                hoch: "Maßnahmen:\n"
+                    + "- Teilnehmer: Erstellt digitales Portfolio mit 5 Technologien\n"
+                    + "- Lehrkraft: Bietet anspruchsvolle IT-Projekte\n"
+                    + "- Sozialpädagoge: Organisiert Technologie-Workshops",
+                mittel: "Maßnahmen:\n"
+                    + "- Teilnehmer: Übt wöchentlich 2 Standardprogramme\n"
+                    + "- Lehrkraft: Gibt strukturierte Computeraufgaben\n"
+                    + "- Sozialpädagoge: Bietet technische Hilfestellung",
+                niedrig: "Maßnahmen:\n"
+                    + "- Teilnehmer: Wiederholt täglich Basisbedienung\n"
+                    + "- Lehrkraft: Bietet stark angeleitete Computerübungen\n"
+                    + "- Sozialpädagoge: Führt durch grundlegende Funktionen"
+            },
+            lebenspraktische_fertigkeiten: {
+                hoch: "Maßnahmen:\n"
+                    + "- Teilnehmer: Führt 4-wöchigen Haushaltsplan eigenständig\n"
+                    + "- Lehrkraft: Simuliert komplexe Alltagssituationen\n"
+                    + "- Sozialpädagoge: Berät bei finanzieller Planung",
+                mittel: "Maßnahmen:\n"
+                    + "- Teilnehmer: Erledigt wöchentlich 3 praktische Aufgaben\n"
+                    + "- Lehrkraft: Bietet praktische Übungen an\n"
+                    + "- Sozialpädagoge: Begleitet bei Behördengängen",
+                niedrig: "Maßnahmen:\n"
+                    + "- Teilnehmer: Übt täglich 1 Grundfertigkeit (z.B. Wäsche waschen)\n"
+                    + "- Lehrkraft: Zeigt kleinschrittige Abläufe\n"
+                    + "- Sozialpädagoge: Unterstützt bei der täglichen Routine"
+            },
+            gruene_kompetenzen: {
+                hoch: "Maßnahmen:\n"
+                    + "- Teilnehmer: Initiiert Nachhaltigkeitsprojekt mit 3 Aktionen\n"
+                    + "- Lehrkraft: Integriert Umweltaspekte in den Unterricht\n"
+                    + "- Sozialpädagoge: Organisiert Exkursionen zu Umweltthemen",
+                mittel: "Maßnahmen:\n"
+                    + "- Teilnehmer: Führt wöchentliches Umweltprotokoll\n"
+                    + "- Lehrkraft: Diskutiert ökologische Themen\n"
+                    + "- Sozialpädagoge: Übt umweltbewusstes Verhalten",
+                niedrig: "Maßnahmen:\n"
+                    + "- Teilnehmer: Setzt täglich 1 einfache Umweltroutine um\n"
+                    + "- Lehrkraft: Bietet konkrete Handlungsanweisungen\n"
+                    + "- Sozialpädagoge: Führt durch grundlegende Praktiken"
+            },
+            internet_4_0: {
+                hoch: "Maßnahmen:\n"
+                    + "- Teilnehmer: Erstellt Dokumentation zu 3 modernen Technologien\n"
+                    + "- Lehrkraft: Bietet anspruchsvolle IT-Aufgaben\n"
+                    + "- Sozialpädagoge: Organisiert Technologie-Tests",
+                mittel: "Maßnahmen:\n"
+                    + "- Teilnehmer: Übt wöchentlich 2 Internetdienste\n"
+                    + "- Lehrkraft: Gibt strukturierte Online-Aufgaben\n"
+                    + "- Sozialpädagoge: Bietet technische Unterstützung",
+                niedrig: "Maßnahmen:\n"
+                    + "- Teilnehmer: Lernt täglich 1 Basis-Funktion\n"
+                    + "- Lehrkraft: Bietet stark angeleitete Übungen\n"
+                    + "- Sozialpädagoge: Führt durch einfache Anwendungen"
+            },
+            diversitaetskompetenz: {
+                hoch: "Maßnahmen:\n"
+                    + "- Teilnehmer: Organisiert Inklusionsveranstaltung\n"
+                    + "- Lehrkraft: Integriert Diversitätsthemen in den Unterricht\n"
+                    + "- Sozialpädagoge: Vermittelt Kontakte zu diversen Gruppen",
+                mittel: "Maßnahmen:\n"
+                    + "- Teilnehmer: Führt wöchentliche Reflexion zu Vielfalt\n"
+                    + "- Lehrkraft: Diskutiert Unterschiede und Gemeinsamkeiten\n"
+                    + "- Sozialpädagoge: Übt wertschätzende Kommunikation",
+                niedrig: "Maßnahmen:\n"
+                    + "- Teilnehmer: Lernt täglich 1 Aspekt von Diversität\n"
+                    + "- Lehrkraft: Zeigt konkrete Beispiele\n"
+                    + "- Sozialpädagoge: Erklärt grundlegende Konzepte"
+            }
+        };
+
+        function showInfo() {
+            const selected = document.getElementById("info-select").value;
+            const infoBox = document.getElementById("info-box");
+            infoBox.textContent = selected ? kompetenzInfos[selected] : "Wähle eine Kompetenz für eine Erklärung.";
+        }
+
+        function generateAll() {
+            const kompetenz = document.getElementById("kompetenz").value;
+            const niveau = document.getElementById("niveau").value;
+            const name = document.getElementById("name").value.trim();
+            
+            if (!kompetenz || !niveau || !name) {
+                alert("Bitte alle Felder ausfüllen!");
+                return;
+            }
+            
+            // Kompetenzbeschreibung
+            const kompetenzText = `${name} ${descriptions[kompetenz][niveau]}`;
+            document.getElementById("output-section").textContent = kompetenzText;
+            
+            // SMART-Ziel
+            let smartText = smartGoals[kompetenz][niveau];
+            smartText = smartText.replace(/\[Name\]/g, name)
+                               .replace(/\[Datum\]/g, new Date(new Date().setMonth(new Date().getMonth()+3)).toLocaleDateString('de-DE'));
+            document.getElementById("smart-section").textContent = smartText;
+            
+            // Maßnahmen
+            document.getElementById("steps-section").textContent = measures[kompetenz][niveau];
+        }
+
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            navigator.clipboard.writeText(element.textContent)
+                .then(() => alert("Text kopiert!"))
+                .catch(err => alert("Fehler beim Kopieren: " + err));
+        }
+    </script>
+</body>
+</html>
